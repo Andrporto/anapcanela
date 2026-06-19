@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0E5C5B">
+<title>Mala Pronta</title>
+<style>
+  :root{
+    --ink:#13302F; --petrol:#0E5C5B; --petrol-d:#0A4140;
+    --coral:#F2624C; --coral-d:#D94B36;
+    --cream:#FBF6EC; --sand:#F0E7D6; --line:#E1D5BE;
+    --good:#1C8C5B; --muted:#6C7A78; --white:#fff;
+    --r:16px; --rs:11px;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0}
+  body{font-family:var(--sans); color:var(--ink); background:var(--cream); line-height:1.4;
+    max-width:520px; margin:0 auto; padding-bottom:calc(86px + env(safe-area-inset-bottom)); -webkit-text-size-adjust:100%;}
+  header{background:var(--petrol); color:var(--cream); padding:calc(14px + env(safe-area-inset-top)) 16px 14px;
+    position:sticky; top:0; z-index:30; box-shadow:0 2px 0 rgba(0,0,0,.08);}
+  .brand{display:flex; align-items:center; gap:9px}
+  .brand h1{font-size:21px; margin:0; letter-spacing:-.02em; font-weight:800; flex:1}
+  .brand .tagdot{width:7px;height:7px;border-radius:50%;background:var(--coral)}
+  .brand .malabtn{background:rgba(255,255,255,.16);color:var(--cream);border-radius:20px;padding:7px 13px;font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:6px}
+  .trip{display:flex; gap:8px; margin-top:11px}
+  .trip input{border:none; border-radius:var(--rs); padding:9px 12px; font-size:15px;
+    background:rgba(255,255,255,.14); color:var(--cream); font-family:var(--sans); min-width:0;}
+  .trip input.tname{flex:1}
+  .trip input::placeholder{color:rgba(251,246,236,.6)}
+  .trip .rate{flex:0 0 104px}
+  .trip label{position:absolute;left:-9999px}
+
+  main{padding:16px 16px 8px}
+  .eyebrow{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:700; margin:2px 0 10px}
+  .hint{font-size:13px;color:var(--muted);margin:0 0 14px}
+
+  .card{background:var(--white); border:1px solid var(--line); border-radius:var(--r); padding:14px; margin-bottom:11px}
+  .row{display:flex; align-items:center; gap:10px}
+  .grow{flex:1; min-width:0}
+  .name{font-weight:700; font-size:16px; word-break:break-word}
+  .price{font-family:var(--mono); font-weight:700; color:var(--petrol)}
+  .sub{font-size:12.5px; color:var(--muted)}
+  .pill{display:inline-block;font-family:var(--mono);font-size:12px;background:var(--sand);color:var(--petrol-d);border-radius:20px;padding:2px 9px;font-weight:700}
+
+  button{font-family:var(--sans); cursor:pointer; border:none}
+  .btn{background:var(--petrol); color:var(--cream); border-radius:var(--rs); padding:12px 14px; font-size:15px; font-weight:700; width:100%}
+  .btn:active{background:var(--petrol-d)}
+  .btn.coral{background:var(--coral)} .btn.coral:active{background:var(--coral-d)}
+  .btn.ghost{background:transparent;color:var(--petrol);border:1.5px solid var(--line)}
+  .btn.danger{background:transparent;color:var(--coral-d);border:1.5px solid #E7B7AD}
+  .mini{width:auto; padding:8px 12px; font-size:13.5px; border-radius:10px}
+  .add{flex:0 0 auto;background:var(--coral);color:#fff;width:42px;height:42px;border-radius:12px;font-size:23px;font-weight:600;line-height:1;display:grid;place-items:center}
+  .add:active{background:var(--coral-d)}
+  .chip{display:inline-flex;align-items:center;gap:6px;background:var(--sand);border:1px solid var(--line);border-radius:20px;padding:5px 6px 5px 11px;font-size:13.5px;margin:4px 4px 0 0}
+  .chip b{font-family:var(--mono)}
+  .chip .x{width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.07);display:grid;place-items:center;font-size:14px;color:var(--muted)}
+
+  .field{display:flex;gap:8px;margin-bottom:9px}
+  .field input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:var(--rs);padding:11px 12px;font-size:16px;font-family:var(--sans);background:#fff}
+  .field input.num{flex:0 0 92px;font-family:var(--mono)}
+  .field input:focus{outline:none;border-color:var(--petrol)}
+  .iname{width:100%;border:1.5px solid var(--line);border-radius:var(--rs);padding:10px 12px;font-size:16px;font-weight:700;font-family:var(--sans);background:#fff;margin-bottom:9px}
+  .iname:focus{outline:none;border-color:var(--petrol)}
+  .iprice{flex:0 0 96px;border:1.5px solid var(--line);border-radius:10px;padding:10px;font-family:var(--mono);font-weight:700;text-align:right;font-size:15px}
+  .iprice:focus{outline:none;border-color:var(--petrol)}
+
+  .sellbox{border-top:1px dashed var(--line); margin-top:11px; padding-top:11px; display:none}
+  .sellbox.open{display:block}
+  .qty{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:var(--rs);overflow:hidden;flex:0 0 auto}
+  .qty button{width:38px;height:42px;background:var(--sand);font-size:20px;color:var(--petrol-d)}
+  .qty span{width:34px;text-align:center;font-family:var(--mono);font-weight:700;font-size:16px}
+
+  .tag{background:var(--white);border:1px solid var(--line);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
+  .tag-top{display:flex;align-items:center;gap:10px;padding:13px 14px;background:var(--sand);border-bottom:2px dashed var(--line);position:relative}
+  .tag-top::before,.tag-top::after{content:"";position:absolute;bottom:-7px;width:12px;height:12px;border-radius:50%;background:var(--cream);border:1px solid var(--line)}
+  .tag-top::before{left:-7px} .tag-top::after{right:-7px}
+  .tag-name{font-weight:800;font-size:17px;flex:1;min-width:0;word-break:break-word}
+  .tag-tot{font-family:var(--mono);font-weight:800;font-size:17px;color:var(--coral-d)}
+  .tag ul{list-style:none;margin:0;padding:11px 14px;font-size:14.5px}
+  .tag li{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dotted var(--line)}
+  .tag li:last-child{border:none}
+  .tag li .ln{flex:1;min-width:0}
+  .tag li .lp{font-family:var(--mono);color:var(--muted);white-space:nowrap}
+  .tag-act{display:flex;gap:8px;padding:0 14px 13px}
+  .check{padding:11px 14px;font-size:14.5px}
+  .check label{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px dotted var(--line)}
+  .check label:last-child{border:none}
+  .check input{width:21px;height:21px;accent-color:var(--good);flex:0 0 auto}
+  .check .done{color:var(--muted);text-decoration:line-through}
+  .check .cq{font-family:var(--mono);color:var(--petrol);font-weight:700;margin-left:auto}
+
+  .warn{background:#FFF3E9;border:1px solid #F2C79E;color:#9A5410;border-radius:var(--rs);padding:10px 12px;font-size:13px;margin-bottom:11px}
+  .empty{text-align:center;color:var(--muted);padding:40px 18px;font-size:14.5px}
+  .empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:5px}
+
+  nav{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:var(--white);
+      border-top:1px solid var(--line);display:flex;z-index:30;padding-bottom:env(safe-area-inset-bottom)}
+  nav button{flex:1;background:none;padding:9px 2px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:11px;font-weight:600}
+  nav button .ic{font-size:21px;line-height:1}
+  nav button.on{color:var(--petrol)}
+
+  textarea{width:100%;min-height:150px;border:1.5px solid var(--line);border-radius:var(--rs);padding:12px;font-size:14px;font-family:var(--mono);background:#fff}
+  textarea:focus{outline:none;border-color:var(--petrol)}
+  .toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;
+         padding:11px 18px;border-radius:24px;font-size:14px;font-weight:600;opacity:0;transition:.25s;z-index:60;pointer-events:none;max-width:90%}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .seg{display:flex;background:var(--sand);border-radius:var(--rs);padding:3px;margin-bottom:14px}
+  .seg button{flex:1;background:none;padding:9px;border-radius:9px;font-size:14px;font-weight:700;color:var(--muted)}
+  .seg button.on{background:#fff;color:var(--petrol);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  details summary{cursor:pointer;font-weight:700;color:var(--petrol);font-size:14px;padding:6px 0;list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"＋ ";font-weight:700}
+  details[open] summary::before{content:"－ "}
+
+  .backdrop{position:fixed;inset:0;background:rgba(19,48,47,.45);z-index:40;display:none}
+  .backdrop.open{display:block}
+  .sheet{position:fixed;left:0;right:0;bottom:0;max-width:520px;margin:0 auto;background:var(--cream);
+    border-radius:20px 20px 0 0;z-index:41;transform:translateY(100%);transition:transform .25s;
+    max-height:86vh;overflow:auto;padding:0 16px calc(20px + env(safe-area-inset-bottom))}
+  .sheet.open{transform:translateY(0)}
+  .grab{width:40px;height:4px;background:var(--line);border-radius:3px;margin:10px auto 6px}
+  .sheet h2{font-size:18px;margin:8px 2px 14px}
+  .malarow{border:1px solid var(--line);border-radius:14px;background:#fff;margin-bottom:10px;overflow:hidden}
+  .malarow.active{border-color:var(--petrol);box-shadow:0 0 0 2px rgba(14,92,91,.16)}
+  .malarow .top{display:flex;align-items:center;gap:10px;padding:13px 14px}
+  .malarow .top:active{background:var(--sand)}
+  .malarow .mn{font-weight:700;font-size:16px;flex:1;min-width:0;word-break:break-word}
+  .malarow .badge{font-size:11px;font-weight:800;color:var(--petrol);background:var(--sand);border-radius:20px;padding:3px 9px}
+  .malarow .msub{font-size:12.5px;color:var(--muted);padding:0 14px 11px}
+  .malarow .mact{display:flex;gap:8px;padding:0 14px 12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><h1>Mala Pronta</h1><span class="tagdot"></span>
+    <button class="malabtn" onclick="openSheet()">🧳 <span id="curname">Malas</span> ▾</button>
+  </div>
+  <div class="trip">
+    <label for="trip">Nome da viagem</label>
+    <input id="trip" class="tname" placeholder="Mala de Janeiro ✈️">
+    <label for="rate">Dólar</label>
+    <input id="rate" class="rate" inputmode="decimal" placeholder="Dólar R$">
+  </div>
+  <div id="syncbar" style="display:none;margin-top:9px;font-size:12px;font-weight:600;color:rgba(251,246,236,.9)"></div>
+</header>
+
+<main id="view"></main>
+
+<nav>
+  <button data-tab="mala" class="on"><span class="ic">🧳</span>Mala</button>
+  <button data-tab="vender"><span class="ic">🛒</span>Vender</button>
+  <button data-tab="cobranca"><span class="ic">💰</span>Cobrança</button>
+  <button data-tab="separar"><span class="ic">🏷️</span>Separar</button>
+  <button data-tab="historico"><span class="ic">📊</span>Histórico</button>
+</nav>
+
+<div class="backdrop" id="backdrop" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet"><div class="grab"></div>
+  <h2>Minhas malas</h2>
+  <div id="malalist"></div>
+  <button class="btn" onclick="newTrip()">＋ Nova mala</button>
+  <div style="height:16px"></div>
+  <details><summary style="font-size:15px">☁︎ Sincronizar na nuvem (planilha)</summary>
+    <p class="hint" style="margin:8px 0">Cole o endereço que o Apps Script gerou (termina em <b>/exec</b>). A partir daí, tudo salva sozinho na planilha e dá pra abrir de outro aparelho.</p>
+    <div class="field"><input id="cfgUrl" placeholder="Endereço do app da web (…/exec)"></div>
+    <div class="field"><input id="cfgToken" placeholder="Senha/token (se você definiu um)"></div>
+    <div class="row" style="gap:8px">
+      <button class="btn" style="flex:1" onclick="saveSyncCfg()">Salvar e ligar</button>
+      <button class="btn ghost" style="flex:0 0 auto" onclick="syncNow()">Sincronizar agora</button>
+    </div>
+    <p class="hint" style="margin:10px 0 0">Status: <b id="syncStatus">desligada</b></p>
+  </details>
+  <div style="height:8px"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ============ storage (multi-trip), guarded ============ */
+const KEY="malaPronta.v2", OLD="malaPronta.v1";
+let mem=null;
+function persist(){ const j=JSON.stringify(DB); try{ localStorage.setItem(KEY,j); }catch(e){ mem=j; } }
+function readRaw(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function loadDB(){
+  let r=readRaw(KEY)||mem;
+  if(r){ try{ return JSON.parse(r); }catch(e){} }
+  const old=readRaw(OLD);
+  if(old){ try{ const o=JSON.parse(old);
+      const t=newTripObj(o.trip||"Minha mala"); t.rate=o.rate||""; t.items=o.items||[]; t.sales=o.sales||[];
+      return { activeId:t.id, trips:[t] }; }catch(e){} }
+  const t=newTripObj("Minha primeira mala");
+  return { activeId:t.id, trips:[t] };
+}
+function newTripObj(name){ return {id:uid(),name:name||"",rate:"",pix:"",items:[],sales:[],packed:{},createdAt:Date.now()}; }
+
+/* ============ sincronização na nuvem (Apps Script + planilha) ============ */
+const CFGKEY="malaPronta.cfg";
+let CFG=(function(){ try{ return JSON.parse(readRaw(CFGKEY)||"{}"); }catch(e){ return {}; } })();
+let applyingRemote=false, syncTimer=null, syncState="idle";
+function saveCfg(){ try{ localStorage.setItem(CFGKEY, JSON.stringify(CFG)); }catch(e){} }
+function setPending(v){ CFG.pending=v; saveCfg(); }
+function setSync(s){ syncState=s; updateSyncUI(); }
+function dbToRows(){
+  const malas=[], itens=[], vendas=[];
+  DB.trips.forEach(t=>{
+    malas.push({id:t.id,name:t.name||"",rate:t.rate||"",pix:t.pix||"",createdAt:t.createdAt||Date.now()});
+    (t.items||[]).forEach(i=>itens.push({id:i.id,malaId:t.id,name:i.name||"",price:(i.price===""||i.price==null)?"":i.price}));
+    (t.sales||[]).forEach(s=>vendas.push({id:s.id,malaId:t.id,itemId:s.itemId,buyer:s.buyer||"",qty:s.qty||1,variant:s.variant||"",packed:(t.packed&&t.packed[s.id])?1:""}));
+  });
+  return {malas,itens,vendas};
+}
+function rowsToDb(d){
+  const trips=(d.malas||[]).map(m=>({id:String(m.id),name:m.name||"",rate:(m.rate===0||m.rate==null)?"":m.rate,pix:m.pix||"",items:[],sales:[],packed:{},createdAt:Number(m.createdAt)||Date.now()}));
+  const byId={}; trips.forEach(t=>byId[t.id]=t);
+  (d.itens||[]).forEach(i=>{ const t=byId[String(i.malaId)]; if(t) t.items.push({id:String(i.id),name:i.name||"",price:(i.price===""||i.price==null)?"":Number(i.price)}); });
+  (d.vendas||[]).forEach(s=>{ const t=byId[String(s.malaId)]; if(!t)return; const sid=String(s.id);
+    t.sales.push({id:sid,itemId:String(s.itemId),buyer:s.buyer||"",qty:Number(s.qty)||1,variant:s.variant||""});
+    const pk=s.packed; if(pk===1||pk==="1"||pk===true||pk==="TRUE"||pk==="true") t.packed[sid]=true; });
+  if(!trips.length){ const t=newTripObj("Minha primeira mala"); return {activeId:t.id,trips:[t]}; }
+  let activeId=DB&&DB.activeId; if(!trips.find(t=>t.id===activeId)) activeId=trips[0].id;
+  return {activeId,trips};
+}
+function api(payload){ return fetch(CFG.url,{method:"POST",body:JSON.stringify(payload)}).then(r=>r.json()); }
+function pull(){ if(!CFG.url) return Promise.resolve();
+  setSync("saving");
+  return api({action:"load",token:CFG.token||""}).then(res=>{
+    if(!res||res.ok===false) throw new Error((res&&res.error)||"erro");
+    applyingRemote=true; DB=rowsToDb(res); persist(); applyingRemote=false;
+    setPending(false); setSync("saved"); syncHeader(); render();
+  }).catch(()=>setSync("offline")); }
+function push(){ if(!CFG.url) return Promise.resolve();
+  setSync("saving"); const rows=dbToRows();
+  return api(Object.assign({action:"save",token:CFG.token||""},rows)).then(res=>{
+    if(!res||res.ok===false) throw new Error((res&&res.error)||"erro");
+    setPending(false); setSync("saved");
+  }).catch(()=>{ setPending(true); setSync("offline"); }); }
+function scheduleSync(){ if(!CFG.url) return; setPending(true); setSync("saving"); clearTimeout(syncTimer); syncTimer=setTimeout(push,1200); }
+function syncNow(){ if(!CFG.url){toast("Cole o endereço da sincronização primeiro");return;} (CFG.pending?push():pull()).then(()=>toast("Sincronizado ✓")); }
+function updateSyncUI(){
+  const bar=$("#syncbar");
+  if(bar){ if(!CFG.url){ bar.style.display="none"; } else { bar.style.display="block";
+    bar.textContent = syncState==="saving"?"☁︎ salvando…": syncState==="saved"?"☁︎ salvo na nuvem ✓": syncState==="offline"?"⚠︎ offline — salvo no aparelho, vou tentar de novo":"☁︎ nuvem ligada"; } }
+  const st=$("#syncStatus"); if(st){ st.textContent=!CFG.url?"desligada":(syncState==="offline"?"offline (tentando)":syncState==="saving"?"salvando…":"ligada ✓"); }
+}
+function saveSyncCfg(){
+  CFG.url=($("#cfgUrl").value||"").trim(); CFG.token=($("#cfgToken").value||"").trim(); saveCfg();
+  if(CFG.url){ toast("Sincronização ligada ✓"); (CFG.pending?push():pull()); } else { setSync("off"); }
+  updateSyncUI();
+}
+
+let DB, tab="mala", openItem=null, sepMode="produto", histMode="mala", qtemp={};
+const $=s=>document.querySelector(s), view=$("#view");
+function uid(){return Math.random().toString(36).slice(2,9);}
+DB=loadDB();
+function T(){ let t=DB.trips.find(x=>x.id===DB.activeId); if(!t){ t=DB.trips[0]||newTripObj("Minha mala"); if(!DB.trips.length)DB.trips.push(t); DB.activeId=t.id; } if(!t.packed)t.packed={}; return t; }
+function save(){ persist(); if(!applyingRemote && CFG.url) scheduleSync(); }
+
+/* ============ helpers ============ */
+const esc=s=>(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function brl(n){ if(n==null||isNaN(n)) return "—"; return "R$ "+n.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove("show"),1700); }
+function copy(text,msg){ const done=()=>toast(msg||"Copiado ✓");
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done,()=>fb(text,done)); } else fb(text,done); }
+function fb(text,cb){ const t=document.createElement("textarea"); t.value=text; t.style.position="fixed"; t.style.opacity="0"; document.body.appendChild(t); t.select(); try{document.execCommand("copy");}catch(e){} t.remove(); cb&&cb(); }
+
+const item=id=>T().items.find(i=>i.id===id);
+const salesOf=id=>T().sales.filter(s=>s.itemId===id);
+function buyers(){ const m={}; T().sales.forEach(s=>{ (m[s.buyer]=m[s.buyer]||[]).push(s); }); return m; }
+function knownBuyers(){ return [...new Set(T().sales.map(s=>s.buyer))].sort((a,b)=>a.localeCompare(b,"pt-BR")); }
+function lineLabel(s){ const it=item(s.itemId); return (it?it.name:"?")+(s.variant?" "+s.variant:"")+(s.qty>1?" ×"+s.qty:""); }
+function lineTotal(s){ const it=item(s.itemId); if(!it||it.price==null||it.price==="") return null; return Number(it.price)*(s.qty||1); }
+function buyerTotal(arr){ let t=0,miss=false; arr.forEach(s=>{ const v=lineTotal(s); if(v==null)miss=true; else t+=v; }); return {t,miss}; }
+function tripTotal(t){ let g=0; t.sales.forEach(s=>{ const it=t.items.find(i=>i.id===s.itemId); if(it&&it.price!==""&&it.price!=null) g+=Number(it.price)*(s.qty||1); }); return g; }
+
+/* ============ header ============ */
+function syncHeader(){ const t=T(); $("#trip").value=t.name; $("#rate").value=t.rate; $("#curname").textContent=t.name?(t.name.length>14?t.name.slice(0,14)+"…":t.name):"Malas"; }
+$("#trip").addEventListener("input",e=>{T().name=e.target.value;save();$("#curname").textContent=e.target.value||"Malas";});
+$("#rate").addEventListener("input",e=>{T().rate=e.target.value;save();});
+
+/* ============ malas sheet ============ */
+function openSheet(){ renderSheet(); const u=$("#cfgUrl"); if(u)u.value=CFG.url||""; const tk=$("#cfgToken"); if(tk)tk.value=CFG.token||""; updateSyncUI(); $("#backdrop").classList.add("open"); $("#sheet").classList.add("open"); }
+function closeSheet(){ $("#backdrop").classList.remove("open"); $("#sheet").classList.remove("open"); }
+function renderSheet(){
+  let h="";
+  DB.trips.slice().sort((a,b)=>b.createdAt-a.createdAt).forEach(t=>{
+    const act=t.id===DB.activeId, sold=t.sales.reduce((a,s)=>a+(s.qty||1),0);
+    h+=`<div class="malarow ${act?"active":""}">
+      <div class="top" onclick="switchTrip('${t.id}')">
+        <div class="mn">${esc(t.name||"(sem nome)")}</div>
+        ${act?'<span class="badge">ATUAL</span>':""}
+      </div>
+      <div class="msub">${t.items.length} itens · ${sold} vendas · a receber ${brl(tripTotal(t))}</div>
+      <div class="mact">
+        <button class="mini btn ghost" style="flex:1" onclick="renameTrip('${t.id}')">Renomear</button>
+        <button class="mini btn danger" style="flex:1" onclick="deleteTrip('${t.id}')">Excluir</button>
+      </div></div>`;
+  });
+  $("#malalist").innerHTML=h;
+}
+function newTrip(){ const n=prompt("Nome da nova mala:","Mala de "+new Date().toLocaleDateString("pt-BR",{month:"long"})); if(n===null)return;
+  const t=newTripObj(n.trim()); DB.trips.push(t); DB.activeId=t.id; save(); openItem=null; tab="mala"; syncHeader(); closeSheet(); render(); toast("Mala criada ✓"); }
+function switchTrip(id){ DB.activeId=id; save(); openItem=null; sepMode="produto"; syncHeader(); closeSheet(); render(); window.scrollTo(0,0); toast("Mala aberta ✓"); }
+function renameTrip(id){ const t=DB.trips.find(x=>x.id===id); const n=prompt("Renomear mala:",t.name); if(n===null)return; t.name=n.trim(); save(); renderSheet(); if(id===DB.activeId)syncHeader(); }
+function deleteTrip(id){ const t=DB.trips.find(x=>x.id===id);
+  if(!confirm(`Excluir "${t.name||"esta mala"}" e tudo dentro dela? Isso apaga também da planilha e do histórico, e não dá pra desfazer.\n\nPra fechar uma viagem, você NÃO precisa excluir — é só criar uma mala nova.`))return;
+  DB.trips=DB.trips.filter(x=>x.id!==id);
+  if(!DB.trips.length){ const nt=newTripObj("Minha mala"); DB.trips.push(nt); DB.activeId=nt.id; }
+  else if(id===DB.activeId){ DB.activeId=DB.trips[0].id; }
+  save(); syncHeader(); renderSheet(); render(); toast("Mala excluída ✓"); }
+
+/* ============ tabs ============ */
+function render(){
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));
+  ({mala:renderMala,vender:renderVender,cobranca:renderCobranca,separar:renderSeparar,historico:renderHistorico}[tab])();
+}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{tab=b.dataset.tab;openItem=null;render();window.scrollTo(0,0);});
+
+/* ---------- MALA ---------- */
+function renderMala(){
+  const t=T();
+  let h=`<p class="eyebrow">Itens de "${esc(t.name||"esta mala")}"</p>
+  <p class="hint">A lista vale só para esta mala. Outras malas têm a lista delas. Toque em 🧳 lá em cima pra trocar ou criar mala.</p>
+  <div class="card">
+    <input id="iname" class="iname" placeholder="Item (ex: Rímel marrom)">
+    <div class="field">
+      <input id="iprice" class="num" inputmode="decimal" placeholder="Preço R$">
+      <button class="btn" style="flex:1" onclick="addItem()">Adicionar item</button>
+    </div>
+    <details><summary>Calcular preço pelo dólar</summary>
+      <div class="hint" style="margin:8px 0 6px">Custo = dólar × (1 + taxa) × cotação. Sugestão = custo + R$100.</div>
+      <div class="field">
+        <input id="cusd" class="num" inputmode="decimal" placeholder="US$">
+        <input id="ctax" class="num" inputmode="decimal" placeholder="Taxa %">
+        <button class="mini btn ghost" style="flex:0 0 auto" onclick="calcPrice()">Calcular</button>
+      </div>
+      <div id="calcout" class="hint"></div>
+    </details>
+  </div>`;
+
+  if(!t.items.length){ h+=`<div class="empty"><b>Mala vazia</b>Adicione os itens acima, ou cole sua Nota lá embaixo.</div>`; }
+  t.items.forEach(it=>{
+    const ss=salesOf(it.id), sold=ss.reduce((a,s)=>a+(s.qty||1),0);
+    const rev=ss.reduce((a,s)=>{const v=lineTotal(s);return v==null?a:a+v;},0);
+    h+=`<div class="card">
+      <input class="iname" value="${esc(it.name)}" onchange="renameItem('${it.id}',this.value)">
+      <div class="row">
+        <div class="grow sub">${sold} vendido${sold===1?"":"s"} · receita ${brl(rev)}</div>
+        <input class="iprice" inputmode="decimal" value="${it.price===""?"":it.price}" placeholder="R$" onchange="setPrice('${it.id}',this.value)">
+        <button class="add" style="width:42px;height:42px;font-size:18px;background:var(--sand);color:var(--coral-d)" onclick="delItem('${it.id}')">🗑</button>
+      </div>
+    </div>`;
+  });
+
+  h+=`<div class="card"><details><summary>Importar da minha Nota (por produto)</summary>
+      <p class="hint" style="margin:8px 0">Cole a nota: nome do produto, depois os nomes embaixo, um bloco por produto (linha em branco separando). Vira itens automaticamente.</p>
+      <textarea id="imp" placeholder="Rímel marrom 70&#10;Ana Luiza&#10;Ciça&#10;&#10;Kit carro 85&#10;Maria&#10;Karine"></textarea>
+      <button class="btn coral" style="margin-top:10px" onclick="importNote()">Transformar em itens</button>
+    </details></div>`;
+  view.innerHTML=h;
+}
+function addItem(){ const n=$("#iname").value.trim(); if(!n){toast("Escreva o nome do item");return;}
+  const p=$("#iprice").value.trim().replace(",", ".");
+  T().items.push({id:uid(),name:n,price:p===""?"":Number(p)}); save(); renderMala(); toast("Item adicionado ✓"); $("#iname").focus(); }
+function renameItem(id,v){ const it=item(id); const n=v.trim(); if(!n){toast("O item precisa de um nome");renderMala();return;} it.name=n; save(); }
+function setPrice(id,v){ const it=item(id); it.price=v.trim()===""?"":Number(v.replace(",", ".")); save(); renderMala(); }
+function delItem(id){ const it=item(id); if(salesOf(id).length && !confirm(`"${it.name}" tem vendas. Excluir o item e as vendas dele?`))return;
+  T().items=T().items.filter(i=>i.id!==id); T().sales=T().sales.filter(s=>s.itemId!==id); save(); renderMala(); toast("Item excluído ✓"); }
+function calcPrice(){ const usd=Number(($("#cusd").value||"").replace(",", ".")), tax=Number(($("#ctax").value||"0").replace(",", ".")), rate=Number((T().rate||"").toString().replace(",", "."));
+  if(!usd||!rate){$("#calcout").textContent="Preencha o US$ aqui e o dólar lá em cima.";return;}
+  const cost=usd*(1+tax/100)*rate;
+  $("#calcout").innerHTML=`Custo ≈ <b>${brl(cost)}</b> · sugestão de venda ≈ <b>${brl(cost+100)}</b>`;
+  $("#iprice").value=(cost+100).toFixed(2); }
+
+function importNote(){
+  const raw=$("#imp").value; if(!raw.trim()){toast("Cole a nota primeiro");return;}
+  const blocks=raw.replace(/\r/g,"").split(/\n\s*\n/); let added=0; const t=T();
+  blocks.forEach(blk=>{
+    const lines=blk.split("\n").map(l=>l.trim()).filter(Boolean); if(!lines.length)return;
+    let head=lines[0];
+    if(/^mala\b/i.test(head) && lines.length===1) return;
+    if(/^mala\b/i.test(head)){ lines.shift(); head=lines[0]; if(!head)return; }
+    const pm=head.match(/(\d+[.,]?\d*)\s*$/), price=pm?Number(pm[1].replace(",", ".")):"";
+    const name=head.replace(/\s*\d+[.,]?\d*\s*$/,"").trim(); if(!name)return;
+    let it=t.items.find(i=>i.name.toLowerCase()===name.toLowerCase());
+    if(!it){ it={id:uid(),name,price}; t.items.push(it); } else if(it.price===""&&price!=="") it.price=price;
+    lines.slice(1).forEach(b=>{ let q=1, txt=b;
+      const lead=txt.match(/^(\d+)\s+/); if(lead){q=Number(lead[1]); txt=txt.replace(/^\d+\s+/,"");}
+      const trail=txt.match(/\s(\d+)$/); if(trail){q=Number(trail[1]); txt=txt.replace(/\s\d+$/,"");}
+      txt=txt.replace(/\d+[.,]\d{2}/g,"").trim();
+      const buyer=txt.replace(/\s{2,}/g," ").trim(); if(!buyer)return;
+      t.sales.push({id:uid(),itemId:it.id,buyer,qty:q,variant:""}); added++; });
+  });
+  save(); toast(added+" venda(s) importada(s) ✓"); tab="vender"; openItem=null; render(); window.scrollTo(0,0);
+}
+
+/* ---------- VENDER ---------- */
+function renderVender(){
+  const t=T();
+  if(!t.items.length){ view.innerHTML=`<div class="empty"><b>Sem itens ainda</b>Vá na aba 🧳 Mala e monte a lista.</div>`; return; }
+  let h=`<p class="eyebrow">Lançar vendas</p><p class="hint">Toque no <b>＋</b> do item, escreva quem comprou e confirme. Pode somar vários nomes seguidos.</p>`;
+  h+=`<datalist id="bl">${knownBuyers().map(b=>`<option value="${esc(b)}">`).join("")}</datalist>`;
+  t.items.forEach(it=>{
+    const ss=salesOf(it.id), cnt=ss.reduce((a,s)=>a+(s.qty||1),0), open=openItem===it.id;
+    h+=`<div class="card"><div class="row">
+        <div class="grow"><div class="name">${esc(it.name)}</div>
+          <div class="sub">${it.price===""?'<span style="color:var(--coral-d)">sem preço</span>':brl(it.price)} · ${cnt} vendido${cnt===1?"":"s"}</div></div>
+        ${cnt?`<span class="pill">${cnt}</span>`:""}
+        <button class="add" onclick="toggleSell('${it.id}')">${open?"–":"+"}</button></div>`;
+    if(ss.length) h+=`<div style="margin-top:8px">`+ss.map(s=>`<span class="chip">${esc(s.buyer)}${s.qty>1?` <b>×${s.qty}</b>`:""}<button class="x" onclick="delSale('${s.id}')">✕</button></span>`).join("")+`</div>`;
+    h+=`<div class="sellbox${open?" open":""}">
+        <div class="field">
+          <input id="bn-${it.id}" list="bl" placeholder="Quem comprou?" autocomplete="off" onkeydown="if(event.key==='Enter')addSale('${it.id}')">
+          <div class="qty"><button onclick="stepQ('${it.id}',-1)">–</button><span id="q-${it.id}">${qtemp[it.id]||1}</span><button onclick="stepQ('${it.id}',1)">+</button></div>
+        </div>
+        <button class="btn coral" onclick="addSale('${it.id}')">Adicionar comprador</button>
+      </div></div>`;
+  });
+  view.innerHTML=h;
+  if(openItem){ const el=$("#bn-"+openItem); if(el) el.focus(); }
+}
+function toggleSell(id){ openItem=openItem===id?null:id; renderVender(); }
+function stepQ(id,d){ qtemp[id]=Math.max(1,(qtemp[id]||1)+d); const e=$("#q-"+id); if(e)e.textContent=qtemp[id]; }
+function addSale(id){ const inp=$("#bn-"+id), b=inp.value.trim(); if(!b){toast("Escreva o nome");return;}
+  T().sales.push({id:uid(),itemId:id,buyer:b,qty:qtemp[id]||1,variant:""}); qtemp[id]=1; save();
+  renderVender(); openItem=id; const e=$("#bn-"+id); if(e){e.value="";e.focus();} toast(b+" ✓"); }
+function delSale(sid){ T().sales=T().sales.filter(s=>s.id!==sid); save(); render(); }
+
+/* ---------- COBRANÇA ---------- */
+function renderCobranca(){
+  const t=T(), map=buyers(), names=Object.keys(map).sort((a,b)=>a.localeCompare(b,"pt-BR"));
+  if(!names.length){ view.innerHTML=`<div class="empty"><b>Nada lançado ainda</b>Lance as vendas na aba 🛒 Vender.</div>`; return; }
+  let geral=0, anyMiss=false, h=`<p class="eyebrow">Cobrança por cliente</p>`;
+  if(t.items.some(i=>i.price==="")) h+=`<div class="warn">Tem item sem preço na aba 🧳 Mala. Os totais ignoram esses itens até preencher.</div>`;
+  h+=`<div class="card"><div class="field"><input id="pix" placeholder="Chave Pix / recado (vai no fim de cada cobrança)" value="${esc(t.pix||"")}" oninput="T().pix=this.value;save()"></div></div>`;
+  names.forEach(n=>{ const arr=map[n], {t:tt,miss}=buyerTotal(arr); geral+=tt; if(miss)anyMiss=true;
+    h+=`<div class="tag"><div class="tag-top"><span class="tag-name">${esc(n)}</span><span class="tag-tot">${miss?brl(tt)+" +":brl(tt)}</span></div>
+      <ul>`+arr.map(s=>{const v=lineTotal(s);return `<li><span class="ln">${esc(lineLabel(s))}</span><span class="lp">${v==null?"—":brl(v)}</span></li>`;}).join("")+`</ul>
+      <div class="tag-act"><button class="btn coral mini" style="flex:1" onclick="copyCobranca('${esc(n).replace(/'/g,"\\'")}')">Copiar cobrança 📋</button></div></div>`;
+  });
+  h+=`<div class="card" style="background:var(--petrol);color:var(--cream);border:none"><div class="row">
+      <div class="grow name" style="color:var(--cream)">Total a receber</div>
+      <div class="price" style="color:#FFD9CF;font-size:20px">${brl(geral)}${anyMiss?" +":""}</div></div></div>`;
+  view.innerHTML=h;
+}
+function buildCobranca(n){ const arr=buyers()[n]||[], {t}=buyerTotal(arr), pix=(T().pix||"").trim();
+  let msg=`Oi ${n}! 💛 Aqui o resumo do seu pedido:\n`;
+  arr.forEach(s=>{const v=lineTotal(s); msg+=`• ${lineLabel(s)} — ${v==null?"(combinar)":brl(v)}\n`;});
+  msg+=`\nTotal: ${brl(t)}`; if(pix) msg+=`\n${pix}`; return msg; }
+function copyCobranca(n){ copy(buildCobranca(n),"Cobrança de "+n+" copiada ✓"); }
+
+/* ---------- SEPARAR ---------- */
+function renderSeparar(){
+  const t=T();
+  if(!t.sales.length){ view.innerHTML=`<div class="empty"><b>Nada pra separar ainda</b>Lance as vendas primeiro.</div>`; return; }
+  let h=`<p class="eyebrow">Separar quando a mala chegar</p>
+   <div class="seg"><button class="${sepMode==='produto'?'on':''}" onclick="sepMode='produto';renderSeparar()">Por produto</button>
+   <button class="${sepMode==='cliente'?'on':''}" onclick="sepMode='cliente';renderSeparar()">Etiquetas</button></div>`;
+  if(sepMode==="produto"){
+    h+=`<p class="hint">Confira item por item ao desempacotar. Marque o que já separou.</p>`;
+    t.items.forEach(it=>{ const ss=salesOf(it.id); if(!ss.length)return; const tot=ss.reduce((a,s)=>a+(s.qty||1),0);
+      h+=`<div class="card"><div class="row"><div class="grow name">${esc(it.name)}</div><span class="pill">${tot}</span></div>
+        <div class="check">`+ss.map(s=>{const done=t.packed[s.id];
+          return `<label><input type="checkbox" ${done?"checked":""} onchange="T().packed['${s.id}']=this.checked;save();renderSeparar()">
+            <span class="${done?'done':''}">${esc(s.buyer)}${s.variant?" · "+esc(s.variant):""}</span><span class="cq">×${s.qty||1}</span></label>`;}).join("")+`</div></div>`;
+    });
+    h+=`<button class="btn ghost" onclick="copyPicking()">Copiar lista de separação 📋</button>`;
+  }else{
+    h+=`<p class="hint">Uma etiqueta por sacola. Copie e cole numa nota, ou imprima.</p>`;
+    const map=buyers(), names=Object.keys(map).sort((a,b)=>a.localeCompare(b,"pt-BR"));
+    names.forEach(n=>{ const arr=map[n], {t:tt}=buyerTotal(arr);
+      h+=`<div class="tag"><div class="tag-top"><span class="tag-name">🏷️ ${esc(n)}</span><span class="tag-tot">${brl(tt)}</span></div>
+        <ul>`+arr.map(s=>`<li><span class="ln">${esc(lineLabel(s))}</span><span class="lp">×${s.qty||1}</span></li>`).join("")+`</ul>
+        <div class="tag-act"><button class="btn ghost mini" style="flex:1" onclick="copyLabel('${esc(n).replace(/'/g,"\\'")}')">Copiar etiqueta 📋</button></div></div>`;
+    });
+    h+=`<button class="btn ghost" onclick="copyAllLabels()">Copiar todas as etiquetas 📋</button>`;
+  }
+  view.innerHTML=h;
+}
+function copyPicking(){ const t=T(); let out=`SEPARAÇÃO — ${t.name||"Mala"}\n`;
+  t.items.forEach(it=>{const ss=salesOf(it.id);if(!ss.length)return;
+    out+=`\n${it.name} (${ss.reduce((a,s)=>a+(s.qty||1),0)}):\n`+ss.map(s=>`  ☐ ${s.buyer} ×${s.qty||1}${s.variant?" — "+s.variant:""}`).join("\n")+"\n";});
+  copy(out,"Lista de separação copiada ✓"); }
+function buildLabel(n){ const arr=buyers()[n]||[], {t}=buyerTotal(arr);
+  return `🏷️ ${n}\n`+arr.map(s=>`• ${lineLabel(s)}`).join("\n")+`\nTotal: ${brl(t)}`; }
+function copyLabel(n){ copy(buildLabel(n),"Etiqueta de "+n+" copiada ✓"); }
+function copyAllLabels(){ const names=Object.keys(buyers()).sort((a,b)=>a.localeCompare(b,"pt-BR"));
+  copy(names.map(buildLabel).join("\n\n———\n\n"),"Todas as etiquetas copiadas ✓"); }
+
+/* ---------- HISTÓRICO (faturamento por mala / mês / produto) ---------- */
+function monthKey(ts){ const d=new Date(Number(ts)||Date.now()); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); }
+function monthLabel(ts){ const d=new Date(Number(ts)||Date.now()); return d.toLocaleDateString("pt-BR",{month:"long",year:"numeric"}); }
+function tripStats(t){ const vendas=(t.sales||[]).reduce((a,s)=>a+(s.qty||1),0); return {fat:tripTotal(t), vendas, itens:(t.items||[]).length}; }
+function renderHistorico(){
+  const trips=DB.trips.slice();
+  const totalFat=trips.reduce((a,t)=>a+tripTotal(t),0);
+  const totalVendas=trips.reduce((a,t)=>a+(t.sales||[]).reduce((b,s)=>b+(s.qty||1),0),0);
+  let h=`<p class="eyebrow">Histórico de faturamento</p>`;
+  h+=`<div class="card" style="background:var(--petrol);color:var(--cream);border:none">
+       <div class="row"><div class="grow"><div class="name" style="color:var(--cream)">Faturamento total</div>
+       <div class="sub" style="color:rgba(251,246,236,.8)">${trips.length} mala${trips.length===1?"":"s"} · ${totalVendas} vendas</div></div>
+       <div class="price" style="color:#FFD9CF;font-size:21px">${brl(totalFat)}</div></div></div>`;
+
+  if(totalVendas===0){
+    h+=`<div class="empty"><b>Sem histórico ainda</b>Cada viagem vira uma mala nova (🧳 Malas ▸ Nova mala). Não apague as antigas — o faturamento de todas aparece aqui.</div>`;
+    view.innerHTML=h; return;
+  }
+  h+=`<div class="warn">Dica: não apague malas fechadas. Crie uma <b>mala nova</b> a cada viagem — o histórico de todas fica guardado aqui e na planilha.</div>`;
+  h+=`<div class="seg">
+      <button class="${histMode==='mala'?'on':''}" onclick="histMode='mala';renderHistorico()">Por mala</button>
+      <button class="${histMode==='mes'?'on':''}" onclick="histMode='mes';renderHistorico()">Por mês</button>
+      <button class="${histMode==='produto'?'on':''}" onclick="histMode='produto';renderHistorico()">Por produto</button></div>`;
+
+  if(histMode==="mala"){
+    trips.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).forEach(t=>{
+      const st=tripStats(t);
+      let items=(t.items||[]).map(it=>{ const q=salesIn(t,it.id); const rev=(it.price===""||it.price==null)?null:Number(it.price)*q; return {name:it.name,q,rev}; })
+        .filter(x=>x.q>0).sort((a,b)=>(b.rev||0)-(a.rev||0));
+      h+=`<div class="card"><details><summary style="font-weight:700;color:var(--ink)">
+          <span style="display:flex;justify-content:space-between;gap:10px"><span class="grow">${esc(t.name||"(sem nome)")}<br><span class="sub" style="font-weight:400">${monthLabel(t.createdAt)} · ${st.vendas} vendas</span></span>
+          <span class="price" style="color:var(--coral-d)">${brl(st.fat)}</span></span></summary>
+        <div style="margin-top:10px">`+items.map(x=>`<div class="row" style="padding:4px 0;border-bottom:1px dotted var(--line)"><span class="grow">${esc(x.name)} <span class="sub">×${x.q}</span></span><span class="price">${x.rev==null?"—":brl(x.rev)}</span></div>`).join("")+`</div></details></div>`;
+    });
+  } else if(histMode==="mes"){
+    const byM={};
+    trips.forEach(t=>{ const k=monthKey(t.createdAt); (byM[k]=byM[k]||{label:monthLabel(t.createdAt),fat:0,vendas:0,malas:[]});
+      byM[k].fat+=tripTotal(t); byM[k].vendas+=(t.sales||[]).reduce((a,s)=>a+(s.qty||1),0); byM[k].malas.push(t.name||"(sem nome)"); });
+    Object.keys(byM).sort().reverse().forEach(k=>{ const m=byM[k];
+      h+=`<div class="card"><details><summary style="font-weight:700;color:var(--ink)">
+          <span style="display:flex;justify-content:space-between;gap:10px"><span class="grow" style="text-transform:capitalize">${esc(m.label)}<br><span class="sub" style="font-weight:400">${m.malas.length} mala${m.malas.length===1?"":"s"} · ${m.vendas} vendas</span></span>
+          <span class="price" style="color:var(--coral-d)">${brl(m.fat)}</span></span></summary>
+        <div class="sub" style="margin-top:8px">${m.malas.map(esc).join(" · ")}</div></details></div>`;
+    });
+  } else {
+    const agg={};
+    trips.forEach(t=>(t.sales||[]).forEach(s=>{ const it=(t.items||[]).find(i=>i.id===s.itemId); if(!it)return;
+      const key=(it.name||"").trim().toLowerCase(); const a=agg[key]||(agg[key]={name:(it.name||"").trim(),qty:0,rev:0,malas:new Set()});
+      a.qty+=(s.qty||1); if(it.price!==""&&it.price!=null)a.rev+=Number(it.price)*(s.qty||1); a.malas.add(t.id); }));
+    const list=Object.values(agg).sort((a,b)=>b.rev-a.rev);
+    h+=`<p class="hint">Somando todas as malas — o que mais faturou no topo.</p>`;
+    list.forEach((a,idx)=>{ h+=`<div class="card"><div class="row">
+        <div style="flex:0 0 26px;font-family:var(--mono);font-weight:800;color:var(--muted)">${idx+1}</div>
+        <div class="grow"><div class="name">${esc(a.name)}</div><div class="sub">${a.qty} un · ${a.malas.size} mala${a.malas.size===1?"":"s"}</div></div>
+        <div class="price" style="color:var(--coral-d)">${brl(a.rev)}</div></div></div>`; });
+  }
+  view.innerHTML=h;
+}
+function salesIn(t,itemId){ return (t.sales||[]).filter(s=>s.itemId===itemId).reduce((a,s)=>a+(s.qty||1),0); }
+
+/* ============ boot ============ */
+syncHeader(); render(); updateSyncUI();
+if(CFG.url){ if(CFG.pending) push(); else pull(); }
+</script>
+</body>
+</html>
